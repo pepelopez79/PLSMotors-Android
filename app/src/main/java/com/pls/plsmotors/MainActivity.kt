@@ -88,6 +88,24 @@ class MainActivity : ComponentActivity() {
                     }
 
                     webChromeClient = object : WebChromeClient() {
+                        override fun onJsAlert(
+                            view: WebView?,
+                            url: String?,
+                            message: String?,
+                            result: android.webkit.JsResult?
+                        ): Boolean {
+                            val builder = androidx.appcompat.app.AlertDialog.Builder(view?.context ?: return false)
+                            builder.setTitle("PLSMotors")
+                            builder.setMessage(message)
+                            builder.setPositiveButton(android.R.string.ok) { dialog, _ ->
+                                result?.confirm()
+                                dialog.dismiss()
+                            }
+                            builder.setCancelable(false)
+                            builder.create().show()
+                            return true
+                        }
+
                         override fun onShowFileChooser(
                             view: WebView?,
                             filePathCallback: android.webkit.ValueCallback<Array<Uri>>?,
@@ -98,7 +116,7 @@ class MainActivity : ComponentActivity() {
                             val intent = Intent(Intent.ACTION_GET_CONTENT)
                             intent.type = "image/*"
                             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                            (context as Activity).startActivityForResult(intent, FILE_CHOOSER_REQUEST_CODE)
+                            (view?.context as Activity).startActivityForResult(intent, FILE_CHOOSER_REQUEST_CODE)
 
                             return true
                         }
